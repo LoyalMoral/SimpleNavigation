@@ -1,0 +1,14 @@
+# Xcode per-user config
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspective
+*.perspectivev3
+*.pbxuser
+xcuserdata
+Breakpoints_v2.xcbkptlist
+**/xcuserdata/**
+
+# Cocoa pods
+Pods/
+Podfile.lock
