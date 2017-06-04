@@ -7,13 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F11AC601EE3BA4600FC7DC1 /* MarkerRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F11AC5F1EE3BA4600FC7DC1 /* MarkerRoute.swift */; };
+		0F11AC621EE3E95000FC7DC1 /* CurrentLocationAnnotationView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F11AC611EE3E95000FC7DC1 /* CurrentLocationAnnotationView.xib */; };
+		0F11AC641EE3E99E00FC7DC1 /* CurrentLocationAnnotationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F11AC631EE3E99E00FC7DC1 /* CurrentLocationAnnotationView.swift */; };
+		0F11AC691EE4094F00FC7DC1 /* current_location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 0F11AC681EE4094F00FC7DC1 /* current_location.gpx */; };
+		0F11AC6B1EE4400500FC7DC1 /* RoutesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F11AC6A1EE4400500FC7DC1 /* RoutesController.swift */; };
+		0F11AC6D1EE440A400FC7DC1 /* MarkersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F11AC6C1EE440A400FC7DC1 /* MarkersController.swift */; };
 		0F236F951EE24F050088DE55 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236F941EE24F050088DE55 /* AppDelegate.swift */; };
-		0F236F971EE24F050088DE55 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236F961EE24F050088DE55 /* ViewController.swift */; };
-		0F236F9A1EE24F050088DE55 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0F236F981EE24F050088DE55 /* Main.storyboard */; };
 		0F236F9C1EE24F050088DE55 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0F236F9B1EE24F050088DE55 /* Assets.xcassets */; };
 		0F236F9F1EE24F050088DE55 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0F236F9D1EE24F050088DE55 /* LaunchScreen.storyboard */; };
 		0F236FAA1EE24F050088DE55 /* Simple_NavigationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236FA91EE24F050088DE55 /* Simple_NavigationTests.swift */; };
 		0F236FB51EE24F050088DE55 /* Simple_NavigationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236FB41EE24F050088DE55 /* Simple_NavigationUITests.swift */; };
+		0F236FC61EE256B80088DE55 /* Navigation.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0F236FC51EE256B80088DE55 /* Navigation.storyboard */; };
+		0F236FC81EE257B00088DE55 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236FC71EE257B00088DE55 /* MapViewController.swift */; };
+		0F236FCA1EE258320088DE55 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F236FC91EE258320088DE55 /* MapKit.framework */; };
+		0F236FCC1EE259980088DE55 /* MapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236FCB1EE259980088DE55 /* MapController.swift */; };
+		0F236FCE1EE26FD80088DE55 /* MapModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236FCD1EE26FD80088DE55 /* MapModel.swift */; };
+		0F236FD01EE26FE80088DE55 /* MarkerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236FCF1EE26FE80088DE55 /* MarkerModel.swift */; };
+		0F236FD21EE272C60088DE55 /* MarkerAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F236FD11EE272C60088DE55 /* MarkerAnnotation.swift */; };
+		0F236FD41EE2967F0088DE55 /* SwiftLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F236FD31EE2967F0088DE55 /* SwiftLocation.framework */; };
 		2F4A3CFFC407491EB879FA98 /* Pods_Simple_Navigation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52CC798767DDB34BA902B79B /* Pods_Simple_Navigation.framework */; };
 		59E5163BA00DE03B44FC7BDE /* Pods_Simple_NavigationUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 928436E9CF77E79C40CC4E3D /* Pods_Simple_NavigationUITests.framework */; };
 		FABF9071E436349AC4FB6B8D /* Pods_Simple_NavigationTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B25E75E4671476F8C6341C92 /* Pods_Simple_NavigationTests.framework */; };
@@ -37,10 +49,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F11AC5F1EE3BA4600FC7DC1 /* MarkerRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkerRoute.swift; sourceTree = "<group>"; };
+		0F11AC611EE3E95000FC7DC1 /* CurrentLocationAnnotationView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CurrentLocationAnnotationView.xib; sourceTree = "<group>"; };
+		0F11AC631EE3E99E00FC7DC1 /* CurrentLocationAnnotationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrentLocationAnnotationView.swift; sourceTree = "<group>"; };
+		0F11AC681EE4094F00FC7DC1 /* current_location.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = current_location.gpx; sourceTree = "<group>"; };
+		0F11AC6A1EE4400500FC7DC1 /* RoutesController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoutesController.swift; sourceTree = "<group>"; };
+		0F11AC6C1EE440A400FC7DC1 /* MarkersController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkersController.swift; sourceTree = "<group>"; };
 		0F236F911EE24F050088DE55 /* Simple Navigation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Simple Navigation.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F236F941EE24F050088DE55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		0F236F961EE24F050088DE55 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		0F236F991EE24F050088DE55 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0F236F9B1EE24F050088DE55 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0F236F9E1EE24F050088DE55 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0F236FA01EE24F050088DE55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -50,6 +66,14 @@
 		0F236FB01EE24F050088DE55 /* Simple NavigationUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Simple NavigationUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F236FB41EE24F050088DE55 /* Simple_NavigationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simple_NavigationUITests.swift; sourceTree = "<group>"; };
 		0F236FB61EE24F050088DE55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0F236FC51EE256B80088DE55 /* Navigation.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Navigation.storyboard; sourceTree = "<group>"; };
+		0F236FC71EE257B00088DE55 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		0F236FC91EE258320088DE55 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		0F236FCB1EE259980088DE55 /* MapController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapController.swift; sourceTree = "<group>"; };
+		0F236FCD1EE26FD80088DE55 /* MapModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapModel.swift; sourceTree = "<group>"; };
+		0F236FCF1EE26FE80088DE55 /* MarkerModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkerModel.swift; sourceTree = "<group>"; };
+		0F236FD11EE272C60088DE55 /* MarkerAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkerAnnotation.swift; sourceTree = "<group>"; };
+		0F236FD31EE2967F0088DE55 /* SwiftLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftLocation.framework; path = "../../../../Library/Developer/Xcode/DerivedData/Simple_Navigation-dsgourrsptmzgeagazdmwlchnxdx/Build/Products/Debug-iphonesimulator/SwiftLocation/SwiftLocation.framework"; sourceTree = "<group>"; };
 		2E74D7023ABCC2DC97E1C7E0 /* Pods-Simple NavigationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Simple NavigationTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Simple NavigationTests/Pods-Simple NavigationTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4956292C1DCD2F51F14437E2 /* Pods-Simple NavigationUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Simple NavigationUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Simple NavigationUITests/Pods-Simple NavigationUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		52CC798767DDB34BA902B79B /* Pods_Simple_Navigation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Simple_Navigation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,6 +90,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F236FD41EE2967F0088DE55 /* SwiftLocation.framework in Frameworks */,
+				0F236FCA1EE258320088DE55 /* MapKit.framework in Frameworks */,
 				2F4A3CFFC407491EB879FA98 /* Pods_Simple_Navigation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,6 +115,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F11AC671EE4094F00FC7DC1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0F11AC681EE4094F00FC7DC1 /* current_location.gpx */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		0F236F881EE24F050088DE55 = {
 			isa = PBXGroup;
 			children = (
@@ -115,8 +149,10 @@
 			isa = PBXGroup;
 			children = (
 				0F236F941EE24F050088DE55 /* AppDelegate.swift */,
-				0F236F961EE24F050088DE55 /* ViewController.swift */,
-				0F236F981EE24F050088DE55 /* Main.storyboard */,
+				0F11AC671EE4094F00FC7DC1 /* Resources */,
+				0F236FC31EE256910088DE55 /* Models */,
+				0F236FC21EE256910088DE55 /* Controllers */,
+				0F236FC41EE256910088DE55 /* Views */,
 				0F236F9B1EE24F050088DE55 /* Assets.xcassets */,
 				0F236F9D1EE24F050088DE55 /* LaunchScreen.storyboard */,
 				0F236FA01EE24F050088DE55 /* Info.plist */,
@@ -142,9 +178,43 @@
 			path = "Simple NavigationUITests";
 			sourceTree = "<group>";
 		};
+		0F236FC21EE256910088DE55 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				0F236FCB1EE259980088DE55 /* MapController.swift */,
+				0F11AC6C1EE440A400FC7DC1 /* MarkersController.swift */,
+				0F11AC6A1EE4400500FC7DC1 /* RoutesController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		0F236FC31EE256910088DE55 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0F236FCD1EE26FD80088DE55 /* MapModel.swift */,
+				0F236FCF1EE26FE80088DE55 /* MarkerModel.swift */,
+				0F236FD11EE272C60088DE55 /* MarkerAnnotation.swift */,
+				0F11AC5F1EE3BA4600FC7DC1 /* MarkerRoute.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		0F236FC41EE256910088DE55 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0F236FC51EE256B80088DE55 /* Navigation.storyboard */,
+				0F236FC71EE257B00088DE55 /* MapViewController.swift */,
+				0F11AC611EE3E95000FC7DC1 /* CurrentLocationAnnotationView.xib */,
+				0F11AC631EE3E99E00FC7DC1 /* CurrentLocationAnnotationView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		69192B19696F55F68B08708A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0F236FD31EE2967F0088DE55 /* SwiftLocation.framework */,
+				0F236FC91EE258320088DE55 /* MapKit.framework */,
 				52CC798767DDB34BA902B79B /* Pods_Simple_Navigation.framework */,
 				B25E75E4671476F8C6341C92 /* Pods_Simple_NavigationTests.framework */,
 				928436E9CF77E79C40CC4E3D /* Pods_Simple_NavigationUITests.framework */,
@@ -244,6 +314,11 @@
 						CreatedOnToolsVersion = 8.3.2;
 						DevelopmentTeam = YNGXG4FX22;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					0F236FA41EE24F050088DE55 = {
 						CreatedOnToolsVersion = 8.3.2;
@@ -284,9 +359,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F11AC621EE3E95000FC7DC1 /* CurrentLocationAnnotationView.xib in Resources */,
+				0F236FC61EE256B80088DE55 /* Navigation.storyboard in Resources */,
 				0F236F9F1EE24F050088DE55 /* LaunchScreen.storyboard in Resources */,
 				0F236F9C1EE24F050088DE55 /* Assets.xcassets in Resources */,
-				0F236F9A1EE24F050088DE55 /* Main.storyboard in Resources */,
+				0F11AC691EE4094F00FC7DC1 /* current_location.gpx in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -449,8 +526,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0F236F971EE24F050088DE55 /* ViewController.swift in Sources */,
+				0F11AC641EE3E99E00FC7DC1 /* CurrentLocationAnnotationView.swift in Sources */,
+				0F236FD21EE272C60088DE55 /* MarkerAnnotation.swift in Sources */,
+				0F236FCE1EE26FD80088DE55 /* MapModel.swift in Sources */,
+				0F236FD01EE26FE80088DE55 /* MarkerModel.swift in Sources */,
 				0F236F951EE24F050088DE55 /* AppDelegate.swift in Sources */,
+				0F236FCC1EE259980088DE55 /* MapController.swift in Sources */,
+				0F11AC601EE3BA4600FC7DC1 /* MarkerRoute.swift in Sources */,
+				0F11AC6D1EE440A400FC7DC1 /* MarkersController.swift in Sources */,
+				0F236FC81EE257B00088DE55 /* MapViewController.swift in Sources */,
+				0F11AC6B1EE4400500FC7DC1 /* RoutesController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -486,14 +571,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		0F236F981EE24F050088DE55 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				0F236F991EE24F050088DE55 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		0F236F9D1EE24F050088DE55 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

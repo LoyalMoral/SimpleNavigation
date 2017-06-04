@@ -16,6 +16,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        if let navigationController = window?.rootViewController {
+            if let mapVC = navigationController.childViewControllers.first as? MapViewController {
+                
+                let model = MapModel()
+                
+                let mapController = MapController(dataModel: model, viewController: mapVC)
+
+                mapVC.controller = mapController
+            }
+        }
+        
+        
         return true
     }
 
