@@ -16,6 +16,9 @@ class MarkersController: NSObject {
     var curLocAnnotation: CurrentLocationAnnotation?
     var markers = [MarkerAnnotation]()
     
+    var currentLocation: CLLocation?
+    var previousLocation: CLLocation?
+    
     init(mapViewController: MapControllerDelegate) {
         
         super.init()
@@ -34,6 +37,13 @@ class MarkersController: NSObject {
             mapViewController.showCurrentLocation(curLocAnnotation!)
         }
         
+        if previousLocation == nil {
+            previousLocation = location
+        } else {
+            previousLocation = currentLocation
+        }
+        currentLocation = location
+        
         curLocAnnotation?.coordinate = location.coordinate
     }
     
@@ -44,6 +54,25 @@ class MarkersController: NSObject {
         let annotations = allAnnotations()
         mapViewController.loadAnnotations(annotations)
         mapViewController.zoomToViewAllMarkers()
+    }
+    
+    func reachedMarkers() -> [MarkerAnnotation] {
+        // Maybe 2 or more markers are closed to each other
+        // User can reaches many markers at a time
+        var result = [MarkerAnnotation]()
+        
+        for marker in markers {
+            if hasReachedMarker(marker) {
+                result.append(marker)
+                markers.removeFirst()
+            } else {
+                break
+            }
+        }
+        
+        processNewMarkers(self.markers)
+        
+        return result
     }
     
     // All markers includes current location
@@ -57,4 +86,36 @@ class MarkersController: NSObject {
         
         return markers
     }
+    
+    func hasReachedMarker(_ marker: MarkerAnnotation) -> Bool {
+        
+        if let distance = distance(to: marker) {
+            if distance <= marker.radius {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
+    func distaceToPreviousLocation() -> Double? {
+        
+        return distance(to: previousLocation)
+    }
+    
+    func distance(to marker: MarkerAnnotation) -> Double? {
+        
+        let markerLocation = CLLocation(latitude: marker.coordinate.latitude, longitude: marker.coordinate.longitude)
+        return distance(to: markerLocation)
+    }
+    
+    func distance(to location: CLLocation?) -> Double? {
+        
+        if currentLocation != nil && location != nil {
+            let distance = currentLocation!.distance(from: location!)
+            return distance
+        }
+        return nil
+    }
+    
 }

@@ -14,32 +14,12 @@ protocol MapViewControllerDelegate: class {
     func mapViewDidFinishLoadingMap()
 }
 
-class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDelegate {
+class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDelegate, ErrorHandler {
     
     @IBOutlet weak var mapView: MKMapView!
     
     var controller: MapViewControllerDelegate?
     
-    var state: NavigationState = .none {
-        
-        didSet {
-            switch state {
-            case .none:
-                self.title = "Simple Navigation"
-            case .loadingMarkers:
-                self.title = "Loading Markers ..."
-            case .loadingUserLocation:
-                self.title = "Loading Current Location ..."
-            case .loadingRoutes:
-                self.title = "Loading Routes ..."
-            case .navigating:
-                self.title = "Navigating"
-//            default:
-//                self.title = "Simple Navigation"
-            }
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -73,13 +53,9 @@ class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDeleg
     
     // MARK: - MapControllerDelegate
     
-    func showError(_ errorDescription: String?) {
+    func setTitle(title: String?) {
         
-        let alert = UIAlertController(title: "Error", message: errorDescription, preferredStyle: UIAlertControllerStyle.alert)
-        self.present(alert, animated: true) { 
-            
-        }
-        
+        self.title = title
     }
     
 //    func showRegion(_ region: MKCoordinateRegion) {
@@ -180,6 +156,7 @@ class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDeleg
             self.mapView.add((route.polyline), level: MKOverlayLevel.aboveRoads)
         }
     }
+    
     
     // MARK: - Map
     

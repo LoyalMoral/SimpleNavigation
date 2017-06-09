@@ -60,7 +60,7 @@ class MapModel: NSObject {
             frequency = UpdateFrequency.continuous
         }
         
-        Location.getLocation(withAccuracy: Accuracy.navigation,
+        Location.getLocation(withAccuracy: Accuracy.house,
                              frequency: frequency,
                              timeout: nil,
                              onSuccess: { (currentLocation: CLLocation) in
@@ -74,6 +74,30 @@ class MapModel: NSObject {
             completionHandler(nil, error.localizedDescription)
         }
     }
+    
+//    func requestCurrentLocation(continuous: Bool = true, completionHandler: @escaping ((_ location: CLLocation?, _ error: String?) -> ())) {
+//        
+//        let block = { (location: CLLocation?, accuracy: INTULocationAccuracy, status: INTULocationStatus) in
+//            
+//            if let currentLocation = location, status == INTULocationStatus.success {
+//                print("currentLocation: \(currentLocation)")
+//                completionHandler(currentLocation, nil)
+//            } else {
+//                print("error getting location: \(status)")
+//                completionHandler(nil, "Can't get current location.")
+//            }
+//        }
+//        
+//        if continuous {
+//            
+//            INTULocationManager.sharedInstance().subscribeToLocationUpdates(withDesiredAccuracy: INTULocationAccuracy.room, block: block)
+//            
+//        } else {
+//            
+//            INTULocationManager.sharedInstance().requestLocation(withDesiredAccuracy: INTULocationAccuracy.room, timeout: 20, block: block)
+//        }
+//        
+//    }
     
     func findRoutes(markers: [MKPointAnnotation], completionHandler: @escaping ((_ routes: [MarkerRoute]?, _ error: String?) -> ())) {
     

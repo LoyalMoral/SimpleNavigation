@@ -19,10 +19,11 @@ enum NavigationState {
 
 protocol MapControllerDelegate: class {
     
-    var state: NavigationState { get set }
+//    var state: NavigationState { get set }
     var mapView: MKMapView! { get set }
     
-    func showError(_ errorDescription: String?)
+    func setTitle(title: String?)
+
     func zoomToViewAllMarkers()
     func loadAnnotations(_ annotations: [MKPointAnnotation])
     func showCurrentLocation(_ annotation: CurrentLocationAnnotation)
@@ -38,6 +39,25 @@ class MapController: NSObject, MapViewControllerDelegate {
     
     private var routesController: RoutesController!
     private var markersController: MarkersController!
+    
+    var state: NavigationState = .none {
+        
+        didSet {
+            switch state {
+            case .none:
+                self.mapViewController.setTitle(title: "Simple Navigation")
+            case .loadingMarkers:
+                self.mapViewController.setTitle(title: "Loading Markers ...")
+            case .loadingUserLocation:
+                self.mapViewController.setTitle(title: "Loading Current Location ...")
+            case .loadingRoutes:
+                self.mapViewController.setTitle(title: "Loading Routes ...")
+            case .navigating:
+                self.mapViewController.setTitle(title: "Navigating")
+            }
+        }
+    }
+
     
     init(dataModel: MapModel, viewController: MapControllerDelegate) {
         
@@ -67,7 +87,7 @@ class MapController: NSObject, MapViewControllerDelegate {
     
     func loadCurrentLocation() {
         
-        mapViewController.state = .loadingUserLocation
+        self.state = .loadingUserLocation
         
         // Get current location to finalize route (just once)
         dataModel.requestCurrentLocation(continuous: false) { [weak self] (location: CLLocation?, error: String?) in
@@ -80,8 +100,8 @@ class MapController: NSObject, MapViewControllerDelegate {
                 welf.markersController.updateCurrentLocation(with: validLocation)
                 welf.loadMarkers()
             } else {
-                welf.mapViewController.state = .none
-                welf.mapViewController.showError(error)
+                welf.state = .none
+                (welf.mapViewController as? ErrorHandler)?.showError(error)
             }
         }
     }
@@ -89,7 +109,7 @@ class MapController: NSObject, MapViewControllerDelegate {
 
     func loadMarkers() {
         
-        mapViewController.state = .loadingMarkers
+        self.state = .loadingMarkers
         
         // Request list markers from server
         dataModel.requestData { [weak self] (data: [MarkerAnnotation]?, error: String?) in
@@ -107,14 +127,14 @@ class MapController: NSObject, MapViewControllerDelegate {
             }
             
             // Error goes here
-            welf.mapViewController.state = .none
-            welf.mapViewController.showError(error ?? "Can't get any markers!")
+            welf.state = .none
+            (welf.mapViewController as? ErrorHandler)?.showError(error ?? "Can't get any markers!")
         }
     }
     
     func loadRoutes() {
         
-        mapViewController.state = .loadingRoutes
+        self.state = .loadingRoutes
         
         let annotations = self.markersController.allAnnotations()
         
@@ -129,15 +149,15 @@ class MapController: NSObject, MapViewControllerDelegate {
                 welf.startNavigation()
                 
             } else {
-                welf.mapViewController.state = .none
-                welf.mapViewController.showError(error)
+                welf.state = .none
+                (welf.mapViewController as? ErrorHandler)?.showError(error)
             }
         }
     }
     
     func startNavigation() {
         
-        self.mapViewController.state = .navigating
+        self.self.state = .navigating
         
         dataModel.requestCurrentLocation(continuous: true) { [weak self] (location: CLLocation?, error: String?) in
             
@@ -147,12 +167,64 @@ class MapController: NSObject, MapViewControllerDelegate {
             
             if let validLocation = location {
                 welf.markersController.updateCurrentLocation(with: validLocation)
+                welf.processNavigationWithLocationChanged()
                 
             } else {
                 // Do nothing
             }
         }
         
+    }
+    
+    func processNavigationWithLocationChanged() {
+        
+        guard let currentRoute = routesController.currentProcessRoute() else {
+            
+            // Continue get markers
+            mapViewDidFinishLoadingMap()
+            return
+        }
+        
+        // Check if reach any marker
+        let reachedMarkers = markersController.reachedMarkers()
+        
+        let count = reachedMarkers.count
+        if count > 0 {
+            routesController.removeDoneRoutes(numberOfRoutes: count)
+            
+        } else {
+            
+            // Check if need to update route
+            if isNeedToUpdateRoute() {
+                routesController.updateingRoute = currentRoute
+                
+                dataModel.findRoute(from: currentRoute.sourceAnnotation, to: currentRoute.destinationAnnotation, completionHandler: { [weak self] (route: MarkerRoute?, error: String?) in
+                    
+                    guard let welf = self else {
+                        return
+                    }
+                    
+                    welf.routesController.updateingRoute = nil
+                    if let validRoute = route {
+                        welf.routesController.updateRoute(validRoute)
+                    }
+                    
+                })
+            }
+        }
+        
+        
+    }
+    
+    
+    
+    func isNeedToUpdateRoute() -> Bool {
+        
+        if let distance = markersController.distaceToPreviousLocation() {
+            let defaultDistance: Double = 50
+            return distance >= defaultDistance
+        }
+        return false
     }
     
     
