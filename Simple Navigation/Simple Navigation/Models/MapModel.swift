@@ -12,44 +12,71 @@ import MapKit
 
 
 class MapModel: NSObject {
-
-    func requestData(completionHandler: @escaping ((_ data: [MarkerAnnotation]?, _ error: String?) -> ())) {
+    
+    private func requestDataFromServer(urlString: String, completionHandler: @escaping ((_ data: Data?, _ error: String?) -> ())) {
         
-        DispatchQueue.global(qos: .default).async {
+        
+        // Haven't setup url yet, use sample data
+        
+        if urlString.characters.count <= 0 {
             
-            let sampleJSON: [[AnyHashable: Any]] = [
-                ["latitude": 10.781312,
-                 "longitude": 106.647123,
-                 "description": "marker1",
-                 "radius": 10],
-                ["latitude": 10.782322,
-                 "longitude": 106.650003,
-                 "description": "marker2",
-                 "radius": 5],
-                ]
-            
-            var data = [MarkerAnnotation]()
-            var error: String?
-            
-            for jsonData in sampleJSON {
-                if let model = MarkerModel(data: jsonData) {
-                    let annotation = MarkerAnnotation(markerModel: model)
-                    data.append(annotation)
+            if let file = Bundle.main.url(forResource: "sample_markers", withExtension: "") {
+                if let data = try? Data(contentsOf: file) {
+                    completionHandler(data, nil)
+                    return
                 }
             }
             
-            if data.count == 0 {
-                error = "There is no marker."
-            }
-        
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                
-                completionHandler(data, error)
-            })
+            
+            completionHandler(nil, "Can't get data")
+            return
         }
         
         
+        // Get from server
         
+        guard let url = URL(string: urlString) else {
+            completionHandler(nil, "Server not available")
+            return
+        }
+        
+        let downloadTask = URLSession.shared.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) in
+            
+            completionHandler(data, error?.localizedDescription)
+        }
+        
+        downloadTask.resume()
+
+    }
+
+    func requestData(urlString: String, completionHandler: @escaping ((_ data: [MarkerAnnotation]?, _ error: String?) -> ())) {
+        
+
+        self.requestDataFromServer(urlString: urlString) { (data: Data?, error: String?) in
+            
+            var markers = [MarkerAnnotation]()
+            var errorString = error
+                        
+            if error == nil, let jsonData = data, let json = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? [AnyHashable: Any] {
+                
+                if let markersJSON = json["markers"] as? [[AnyHashable: Any]] {
+                    
+                    for jsonData in markersJSON {
+                        if let model = MarkerModel(data: jsonData) {
+                            let annotation = MarkerAnnotation(markerModel: model)
+                            markers.append(annotation)
+                        }
+                    }
+
+                }
+            }
+            
+            if markers.count == 0 {
+                errorString = "There is no marker."
+            }
+            
+            completionHandler(markers, errorString)
+        }
         
     }
     
@@ -57,7 +84,7 @@ class MapModel: NSObject {
         
         var frequency = UpdateFrequency.oneShot
         if continuous {
-            frequency = UpdateFrequency.continuous
+            frequency = UpdateFrequency.byDistanceIntervals(meters: 1)
         }
         
         Location.getLocation(withAccuracy: Accuracy.house,
@@ -75,32 +102,15 @@ class MapModel: NSObject {
         }
     }
     
-//    func requestCurrentLocation(continuous: Bool = true, completionHandler: @escaping ((_ location: CLLocation?, _ error: String?) -> ())) {
-//        
-//        let block = { (location: CLLocation?, accuracy: INTULocationAccuracy, status: INTULocationStatus) in
-//            
-//            if let currentLocation = location, status == INTULocationStatus.success {
-//                print("currentLocation: \(currentLocation)")
-//                completionHandler(currentLocation, nil)
-//            } else {
-//                print("error getting location: \(status)")
-//                completionHandler(nil, "Can't get current location.")
-//            }
-//        }
-//        
-//        if continuous {
-//            
-//            INTULocationManager.sharedInstance().subscribeToLocationUpdates(withDesiredAccuracy: INTULocationAccuracy.room, block: block)
-//            
-//        } else {
-//            
-//            INTULocationManager.sharedInstance().requestLocation(withDesiredAccuracy: INTULocationAccuracy.room, timeout: 20, block: block)
-//        }
-//        
-//    }
+    func stopUpdatingNavigation() {
+        
+        Location.stopAllLocationRequests(withError: nil, pause: false)
+    }
     
-    func findRoutes(markers: [MKPointAnnotation], completionHandler: @escaping ((_ routes: [MarkerRoute]?, _ error: String?) -> ())) {
     
+    func findRoutes(markers: [MKPointAnnotation], transportType: MKDirectionsTransportType, completionHandler: @escaping ((_ routes: [MarkerRoute]?, _ error: String?) -> ())) {
+        
+        
         if markers.count < 2 {
             completionHandler(nil, "Can't find route")
             return
@@ -108,10 +118,10 @@ class MapModel: NSObject {
         
         let dGroup = DispatchGroup()
         
-        var currentIndex = 0
-        let count = markers.count
-        
         var routes = [MarkerRoute]()
+        let count = markers.count
+        var currentIndex = 0
+        var countFinishRoute = 0
         
         while (currentIndex + 1 < count) {
             
@@ -119,20 +129,26 @@ class MapModel: NSObject {
             
             let source = markers[currentIndex]
             let destination = markers[currentIndex + 1]
+            let markerRoute = MarkerRoute(source: source, destination: destination)
+            routes.append(markerRoute)
+            
             currentIndex += 1
             
-            findRoute(from: source, to: destination, completionHandler: { (route: MarkerRoute?, error: String?) in
+            findRoute(for: markerRoute, transportType: transportType, completionHandler: { (succeedRoute: MarkerRoute?, error: String?) in
                 
-                if let validRoute = route {
-                    routes.append(validRoute)
+                if succeedRoute != nil {
+                    countFinishRoute += 1
                 }
+                
                 dGroup.leave()
             })
+            
         }
         
-        dGroup.notify(queue: .main) { 
+        
+        dGroup.notify(queue: .main) {
             
-            if routes.count != markers.count - 1 {
+            if routes.count != countFinishRoute {
                 completionHandler(nil, "Can't find route")
             } else {
                 completionHandler(routes, nil)
@@ -140,11 +156,10 @@ class MapModel: NSObject {
         }
     }
     
-    func findRoute(from source: MKPointAnnotation, to destination: MKPointAnnotation, completionHandler: @escaping ((_ route: MarkerRoute?, _ error: String?) -> ())) {
+    func findRoute(for routeData: MarkerRoute, transportType: MKDirectionsTransportType, completionHandler: @escaping ((_ route: MarkerRoute?, _ error: String?) -> ())) {
         
-        
-        let sourceLocation = source.coordinate
-        let destinationLocation = destination.coordinate
+        let sourceLocation = routeData.sourceAnnotation.coordinate
+        let destinationLocation = routeData.destinationAnnotation.coordinate
         
         let sourcePlacemark = MKPlacemark(coordinate: sourceLocation, addressDictionary: nil)
         let destinationPlacemark = MKPlacemark(coordinate: destinationLocation, addressDictionary: nil)
@@ -155,7 +170,7 @@ class MapModel: NSObject {
         let directionRequest = MKDirectionsRequest()
         directionRequest.source = sourceMapItem
         directionRequest.destination = destinationMapItem
-        directionRequest.transportType = .automobile
+        directionRequest.transportType = transportType
         
         
         let directions = MKDirections(request: directionRequest)
@@ -164,13 +179,14 @@ class MapModel: NSObject {
             (response, error) -> Void in
             
             if let response = response {
-            
+                
                 if response.routes.count > 0 {
                     
                     let route = response.routes[0]
                     
-                    let markerRoute = MarkerRoute(route: route, source: source, destination: destination)
-                    completionHandler(markerRoute, nil)
+                    routeData.route = route
+                    
+                    completionHandler(routeData, nil)
                     
                     return
                 }
@@ -179,6 +195,6 @@ class MapModel: NSObject {
             let errorString = error?.localizedDescription ?? "Can't get route"
             completionHandler(nil, errorString)
         }
-
+        
     }
 }

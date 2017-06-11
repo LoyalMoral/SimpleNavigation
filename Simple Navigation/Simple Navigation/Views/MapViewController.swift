@@ -14,7 +14,7 @@ protocol MapViewControllerDelegate: class {
     func mapViewDidFinishLoadingMap()
 }
 
-class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDelegate, ErrorHandler {
+class MapViewController: UIViewController, ErrorHandler {
     
     @IBOutlet weak var mapView: MKMapView!
     
@@ -28,11 +28,6 @@ class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDeleg
         controller?.mapViewDidFinishLoadingMap()
         self.mapView.delegate = self
         
-        
-        
-//        if let currentLocation = self.mapView.userLocation.location?.coordinate {
-//            self.mapView.centerCoordinate = currentLocation
-//        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,124 +36,34 @@ class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDeleg
     }
     
 
-    /*
-    // MARK: - Navigation
+    
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-    }
-    */
-    
-    // MARK: - MapControllerDelegate
-    
-    func setTitle(title: String?) {
         
-        self.title = title
-    }
-    
-//    func showRegion(_ region: MKCoordinateRegion) {
-//        
-//        mapView.setRegion(region, animated: true)
-//    }
-    
-    func zoomToViewAllMarkers() {
-        
-        mapView.showAnnotations(mapView.annotations, animated: true)
-    }
-    
-    func loadAnnotations(_ annotations: [MKPointAnnotation]) {
-        
-        // Remove all old annotations
-        mapView.removeAnnotations(mapView.annotations)
-        
-        mapView.addAnnotations(annotations)
-        
-//        if markers.count < 2 {
-//            return
-//        }
-//        
-//        // 2.
-//        let sourceLocation = markers[0].coordinate
-//        let destinationLocation = markers[1].coordinate
-//        
-//        // 3.
-//        let sourcePlacemark = MKPlacemark(coordinate: sourceLocation, addressDictionary: nil)
-//        let destinationPlacemark = MKPlacemark(coordinate: destinationLocation, addressDictionary: nil)
-//        
-//        // 4.
-//        let sourceMapItem = MKMapItem(placemark: sourcePlacemark)
-//        let destinationMapItem = MKMapItem(placemark: destinationPlacemark)
-//        
-//        // 5.
-////        let sourceAnnotation = MKPointAnnotation()
-////        sourceAnnotation.title = "Times Square"
-////        
-////        if let location = sourcePlacemark.location {
-////            sourceAnnotation.coordinate = location.coordinate
-////        }
-////        
-////        
-////        let destinationAnnotation = MKPointAnnotation()
-////        destinationAnnotation.title = "Empire State Building"
-////        
-////        if let location = destinationPlacemark.location {
-////            destinationAnnotation.coordinate = location.coordinate
-////        }
-//        
-//        // 6.
-//        self.mapView.showAnnotations([markers[0],markers[1]], animated: true )
-//        
-//        // 7.
-//        let directionRequest = MKDirectionsRequest()
-//        directionRequest.source = sourceMapItem
-//        directionRequest.destination = destinationMapItem
-//        directionRequest.transportType = .automobile
-//        
-//        
-//        // Calculate the direction
-//        let directions = MKDirections(request: directionRequest)
-//        
-//        // 8.
-//        directions.calculate {
-//            (response, error) -> Void in
-//            
-//            guard let response = response else {
-//                if let error = error {
-//                    print("Error: \(error)")
-//                }
-//                
-//                return
-//            }
-//            
-//            let route = response.routes[0]
-//            self.mapView.add((route.polyline), level: MKOverlayLevel.aboveRoads)
-//            
-//            print("distance \(route.distance)")
-//            
-//            let rect = route.polyline.boundingMapRect
-//            self.mapView.setRegion(MKCoordinateRegionForMapRect(rect), animated: true)
-//        }
-    }
-    
-    func showCurrentLocation(_ annotation: CurrentLocationAnnotation) {
-        
-        mapView.addAnnotation(annotation)
-        mapView.setCenter(annotation.coordinate, animated: true)
-    }
-    
-    func loadRoutes(_ routes: [MKRoute]) {
-        
-        mapView.removeOverlays(mapView.overlays)
-        
-        for route in routes {
-            self.mapView.add((route.polyline), level: MKOverlayLevel.aboveRoads)
+        if let settingsVC = segue.destination as? SettingsViewController {
+            
+            settingsVC.completionHandler = { [weak self] in
+                
+                guard let welf = self else {
+                    return
+                }
+                
+                welf.controller?.mapViewDidFinishLoadingMap()
+                
+            }
         }
     }
     
     
-    // MARK: - Map
+    
+}
+
+// MARK: - MKMapViewDelegate
+
+extension MapViewController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         
@@ -179,15 +84,70 @@ class MapViewController: UIViewController, MapControllerDelegate, MKMapViewDeleg
         return nil
     }
     
-    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        
-    }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        
+        var routeColor = UIColor(colorLiteralRed: 0, green: 0, blue: 1, alpha: 0.5)
+        
+        if let firstOverlay = mapView.overlays.first {
+            if firstOverlay === overlay {
+                routeColor = UIColor.blue
+            }
+        }
+        
         let renderer = MKPolylineRenderer(overlay: overlay)
-        renderer.strokeColor = UIColor.red
+        renderer.strokeColor = routeColor
         renderer.lineWidth = 5.0
         
         return renderer
+    }
+}
+
+// MARK: - MapControllerDelegate
+
+extension MapViewController: MapControllerDelegate {
+    
+    func setTitle(title: String?) {
+        
+        self.title = title
+    }
+    
+    
+    func zoomToViewAllMarkers() {
+        
+        mapView.showAnnotations(mapView.annotations, animated: true)
+    }
+    
+    func loadAnnotations(_ annotations: [MKPointAnnotation]) {
+        
+        // Remove all old annotations
+        mapView.removeAnnotations(mapView.annotations)
+        
+        mapView.addAnnotations(annotations)
+        
+    }
+    
+    func showCurrentLocation(_ annotation: CurrentLocationAnnotation) {
+        
+        mapView.addAnnotation(annotation)
+        mapView.setCenter(annotation.coordinate, animated: true)
+    }
+    
+    
+    func loadRoutes(_ routes: [MKRoute]) {
+        
+        mapView.removeOverlays(mapView.overlays)
+        
+        for route in routes {
+            self.mapView.add((route.polyline), level: MKOverlayLevel.aboveRoads)
+        }
+    }
+    
+    func showFinishNavigatingAlert() {
+        
+        self.showAlert(title: "Done", content: "You reached all markers. Press Ok to continue", completionHandler: { [weak self] in
+            
+            self?.controller?.mapViewDidFinishLoadingMap()
+        })
     }
 }

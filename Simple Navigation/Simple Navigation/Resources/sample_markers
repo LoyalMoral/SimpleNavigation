@@ -1,0 +1,18 @@
+
+
+{
+"markers": [
+{
+"longitude": 106.616499,
+"latitude": 10.844307,
+"description": "marker 2",
+"radius": 10
+},
+{
+"longitude": 106.657623,
+"latitude": 10.800933,
+"description": "marker 20",
+"radius": 10
+}
+]
+}

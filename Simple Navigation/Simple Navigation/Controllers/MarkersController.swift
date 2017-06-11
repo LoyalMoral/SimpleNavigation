@@ -80,7 +80,7 @@ class MarkersController: NSObject {
         
         if let validCurrentLocation = curLocAnnotation {
             var allMarkers: [MKPointAnnotation] = self.markers
-            allMarkers.append(validCurrentLocation)
+            allMarkers.insert(validCurrentLocation, at: 0)
             return allMarkers
         }
         

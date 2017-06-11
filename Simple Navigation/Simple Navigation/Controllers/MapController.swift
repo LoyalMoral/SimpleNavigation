@@ -19,7 +19,6 @@ enum NavigationState {
 
 protocol MapControllerDelegate: class {
     
-//    var state: NavigationState { get set }
     var mapView: MKMapView! { get set }
     
     func setTitle(title: String?)
@@ -28,12 +27,16 @@ protocol MapControllerDelegate: class {
     func loadAnnotations(_ annotations: [MKPointAnnotation])
     func showCurrentLocation(_ annotation: CurrentLocationAnnotation)
     func loadRoutes(_ routes: [MKRoute])
+    
+    func showFinishNavigatingAlert()
 }
 
 class MapController: NSObject, MapViewControllerDelegate {
 
     private var dataModel: MapModel!
     private weak var mapViewController: MapControllerDelegate!
+    private var settings: SettingsData!
+
     
 //    private var currentLocation: CLLocation?
     
@@ -75,6 +78,11 @@ class MapController: NSObject, MapViewControllerDelegate {
     
     func mapViewDidFinishLoadingMap() {
         
+        let settingsModel = SettingsModel()
+        self.settings = settingsModel.getSettings()
+        
+        clearOldMapDataIfNeeded()
+        
         if markersController.curLocAnnotation == nil {
             loadCurrentLocation()
         }else {
@@ -83,6 +91,17 @@ class MapController: NSObject, MapViewControllerDelegate {
     }
     
     // MARK: - Map Processing
+    
+    func clearOldMapDataIfNeeded() {
+        
+        var annotations = [MKPointAnnotation]()
+        
+        if markersController.curLocAnnotation != nil {
+            annotations.append(markersController.curLocAnnotation!)
+        }
+        mapViewController.loadAnnotations(annotations)
+        mapViewController.loadRoutes([MKRoute]())
+    }
     
     
     func loadCurrentLocation() {
@@ -112,7 +131,7 @@ class MapController: NSObject, MapViewControllerDelegate {
         self.state = .loadingMarkers
         
         // Request list markers from server
-        dataModel.requestData { [weak self] (data: [MarkerAnnotation]?, error: String?) in
+        dataModel.requestData(urlString: settings.serverURL) { [weak self] (data: [MarkerAnnotation]?, error: String?) in
             
             guard let welf = self else {
                 return
@@ -138,7 +157,7 @@ class MapController: NSObject, MapViewControllerDelegate {
         
         let annotations = self.markersController.allAnnotations()
         
-        dataModel.findRoutes(markers: annotations) { [weak self] (routes: [MarkerRoute]?, error: String?) in
+        dataModel.findRoutes(markers: annotations, transportType: settings.transportType) { [weak self] (routes: [MarkerRoute]?, error: String?) in
             
             guard let welf = self else {
                 return
@@ -167,7 +186,10 @@ class MapController: NSObject, MapViewControllerDelegate {
             
             if let validLocation = location {
                 welf.markersController.updateCurrentLocation(with: validLocation)
-                welf.processNavigationWithLocationChanged()
+                
+                if welf.state == .navigating {
+                    welf.processNavigationWithLocationChanged()
+                }
                 
             } else {
                 // Do nothing
@@ -178,33 +200,36 @@ class MapController: NSObject, MapViewControllerDelegate {
     
     func processNavigationWithLocationChanged() {
         
-        guard let currentRoute = routesController.currentProcessRoute() else {
-            
-            // Continue get markers
-            mapViewDidFinishLoadingMap()
-            return
-        }
-        
-        // Check if reach any marker
+        // Check if reach any marker (also remove them from data)
         let reachedMarkers = markersController.reachedMarkers()
         
         let count = reachedMarkers.count
         if count > 0 {
             routesController.removeDoneRoutes(numberOfRoutes: count)
             
+            // Reached all markers
+            if markersController.markers.count <= 0 {
+                self.state = .none
+                mapViewController.showFinishNavigatingAlert()
+            }
+            
         } else {
+            
+            guard let currentRoute = routesController.currentProcessRoute() else {
+                return
+            }
             
             // Check if need to update route
             if isNeedToUpdateRoute() {
-                routesController.updateingRoute = currentRoute
                 
-                dataModel.findRoute(from: currentRoute.sourceAnnotation, to: currentRoute.destinationAnnotation, completionHandler: { [weak self] (route: MarkerRoute?, error: String?) in
+                currentRoute.sourceAnnotation = markersController.curLocAnnotation
+                
+                dataModel.findRoute(for: currentRoute, transportType: settings.transportType, completionHandler: { [weak self] (route: MarkerRoute?, error: String?) in
                     
                     guard let welf = self else {
                         return
                     }
                     
-                    welf.routesController.updateingRoute = nil
                     if let validRoute = route {
                         welf.routesController.updateRoute(validRoute)
                     }
@@ -221,55 +246,10 @@ class MapController: NSObject, MapViewControllerDelegate {
     func isNeedToUpdateRoute() -> Bool {
         
         if let distance = markersController.distaceToPreviousLocation() {
-            let defaultDistance: Double = 50
-            return distance >= defaultDistance
+            
+            return distance >= settings.rud
         }
         return false
     }
-    
-    
-    func findDisplayedRegion(from markers: [MarkerAnnotation]) -> MKCoordinateRegion? {
-        
-        let count = markers.count
-        var region: MKCoordinateRegion?
-        
-        if count == 0 {
-            // Should return nil region
-            
-        } else if count == 1 {
-            region = MKCoordinateRegionMakeWithDistance(markers.first!.coordinate, 1000, 1000)
-            
-        } else {
-            
-            // There are more than 2 markers
-            var smallestCoordinate = markers[0].coordinate
-            var greatestCoordinate = markers[1].coordinate
-            
-            for marker in markers {
-                smallestCoordinate.latitude = min(smallestCoordinate.latitude, marker.coordinate.latitude)
-                smallestCoordinate.longitude = min(smallestCoordinate.longitude, marker.coordinate.longitude)
-                greatestCoordinate.latitude = max(greatestCoordinate.latitude, marker.coordinate.latitude)
-                greatestCoordinate.longitude = max(greatestCoordinate.longitude, marker.coordinate.longitude)
-            }
-         
-            let centerCoordinate = CLLocationCoordinate2D(latitude: (greatestCoordinate.latitude + smallestCoordinate.latitude) / 2,
-                                                          longitude: (greatestCoordinate.longitude + smallestCoordinate.longitude) / 2)
-            
-            let span = MKCoordinateSpan(latitudeDelta: (greatestCoordinate.latitude - smallestCoordinate.latitude) * 1.5, longitudeDelta: (greatestCoordinate.longitude - smallestCoordinate.longitude) * 1.5)
-            
-            region = MKCoordinateRegion(center: centerCoordinate, span: span)
-        }
-        
-        return region
-    }
-    
-    func distance(between firstPoint: CLLocationCoordinate2D, and secondPoint: CLLocationCoordinate2D) -> Double {
-        
-        let firstLoc = CLLocation(latitude: firstPoint.latitude, longitude: firstPoint.longitude)
-        let secondLoc = CLLocation(latitude: secondPoint.latitude, longitude: secondPoint.longitude)
-        
-        let distance = secondLoc.distance(from: firstLoc)
-        
-        return distance
-    }
+
 }

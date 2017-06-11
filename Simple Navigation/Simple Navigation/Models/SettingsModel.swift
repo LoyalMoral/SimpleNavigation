@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 
 
-class UDKeys {
+private class UDKeys {
     static let transportType = "transportType"
     static let rud = "rud"
     static let serverURL = "serverURL"
@@ -22,6 +22,25 @@ class SettingsModel: NSObject {
         MKDirectionsTransportType.automobile,
         MKDirectionsTransportType.walking
     ]
+    
+    func titlesForTransportTypes() -> [String] {
+        
+        var titles = [String]()
+        
+        for transport in availableTransportTypes {
+            
+            switch transport {
+            case MKDirectionsTransportType.automobile:
+                titles.append("Car")
+            case MKDirectionsTransportType.walking:
+                titles.append("Walking")
+            default: break
+                
+            }
+        }
+        
+        return titles
+    }
     
     func getSettings() -> SettingsData {
         
@@ -54,7 +73,7 @@ class SettingsData: NSObject {
     
     var transportType: MKDirectionsTransportType = .automobile
     var rud: Double = 50
-    var serverURL: String = "google.com"
+    var serverURL: String = ""
     
     override init() {
         super.init()

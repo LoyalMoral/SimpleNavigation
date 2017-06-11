@@ -39,25 +39,6 @@ class MarkerModel: NSObject {
             radius = validRaidus
         }
         
-//        if let validLat = (data["latitude"] as? NSNumber)?.floatValue {
-//            latitude = CGFloat(validLat)
-//        } else {
-//            return nil
-//        }
-//        
-//        if let validLong = (data["longitude"] as? NSNumber)?.floatValue {
-//            longitude = CGFloat(validLong)
-//        } else {
-//            return nil
-//        }
-//        
-//        if let validDetails = data["description"] as? String {
-//            details = validDetails
-//        }
-//        
-//        if let validRaidus = (data["radius"] as? NSNumber)?.floatValue {
-//            radius = CGFloat(validRaidus)
-//        }
     }
 
     init(latitude: Double, longitude: Double, details: String, radius: Double) {

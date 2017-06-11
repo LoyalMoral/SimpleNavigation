@@ -16,7 +16,7 @@ protocol SettingsControllerProtocol: class {
     func cancelEditing()
 }
 
-class SettingsViewController: UITableViewController {
+class SettingsViewController: UITableViewController, ErrorHandler {
     
     @IBOutlet weak var transportTypeSegmentedControl: UISegmentedControl!
     
@@ -27,6 +27,8 @@ class SettingsViewController: UITableViewController {
     var delegate: SettingsControllerProtocol!
     
     var data = SettingsViewData()
+    
+    var completionHandler: (() -> ())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +41,10 @@ class SettingsViewController: UITableViewController {
         delegate.startGettingData()
     }
 
+    deinit {
+        print("yeahh!")
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -106,8 +112,11 @@ extension SettingsViewController: SettingsViewProtocol {
         urlTextField.text = data.serverURL
     }
     
-    func dismiss() {
+    func dismiss(saveSettings: Bool) {
         
+        if saveSettings {
+            completionHandler?()
+        }
         let _ = self.navigationController?.popViewController(animated: true)
     }
 }

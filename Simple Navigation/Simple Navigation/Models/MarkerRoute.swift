@@ -15,9 +15,8 @@ class MarkerRoute {
     var sourceAnnotation: MKPointAnnotation!
     var destinationAnnotation: MKPointAnnotation!
     
-    init(route: MKRoute, source: MKPointAnnotation, destination: MKPointAnnotation) {
+    init(source: MKPointAnnotation, destination: MKPointAnnotation) {
         
-        self.route = route
         self.sourceAnnotation = source
         self.destinationAnnotation = destination
     }

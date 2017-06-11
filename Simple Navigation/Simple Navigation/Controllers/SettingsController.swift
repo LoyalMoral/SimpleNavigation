@@ -21,7 +21,7 @@ class SettingsViewData: NSObject {
 protocol SettingsViewProtocol: class {
     
     func updateData(_ viewData: SettingsViewData)
-    func dismiss()
+    func dismiss(saveSettings: Bool)
 }
 
 class SettingsController: NSObject, SettingsControllerProtocol, ErrorHandler {
@@ -39,26 +39,11 @@ class SettingsController: NSObject, SettingsControllerProtocol, ErrorHandler {
         self.delegate = delegate
     }
     
-    // MARK: - Methods
-    
-    func titlesForTransportTypes(types: [MKDirectionsTransportType]) -> [String] {
-        
-        var titles = [String]()
-        
-        for transport in types {
-            
-            switch transport {
-            case MKDirectionsTransportType.automobile:
-                titles.append("Car")
-            case MKDirectionsTransportType.walking:
-                titles.append("Walking")
-            default: break
-                
-            }
-        }
-        
-        return titles
+    deinit {
+        print("yeahh 2!")
     }
+    
+    // MARK: - Methods
 
     func isStringURLValid(_ string: String) -> Bool {
         let types: NSTextCheckingResult.CheckingType = [.link]
@@ -78,7 +63,11 @@ class SettingsController: NSObject, SettingsControllerProtocol, ErrorHandler {
         settings = dataModel.getSettings()
         
         let settingsViewData = SettingsViewData()
-        settingsViewData.transportTypeTitles = self.titlesForTransportTypes(types: availableTransportTypes)
+        settingsViewData.transportTypeTitles = self.dataModel.titlesForTransportTypes()
+        if let currentType = self.availableTransportTypes.index(of: settings.transportType),
+            currentType < availableTransportTypes.count {
+            settingsViewData.currentTransportTypeIndex = currentType
+        }
         settingsViewData.rud = String(settings.rud)
         settingsViewData.serverURL = settings.serverURL
         
@@ -105,6 +94,9 @@ class SettingsController: NSObject, SettingsControllerProtocol, ErrorHandler {
         
         if let urlString = data.serverURL, isStringURLValid(urlString) {
             settings.serverURL = urlString
+        } else if data.serverURL?.characters.count == 0 {
+            // Set url empty to test sample markers
+            settings.serverURL = ""
         } else {
             (delegate as? ErrorHandler)?.showError("Invalid Server URL")
             return
@@ -112,11 +104,11 @@ class SettingsController: NSObject, SettingsControllerProtocol, ErrorHandler {
         
         dataModel.saveSettings(settings)
         
-        delegate?.dismiss()
+        delegate?.dismiss(saveSettings: true)
     }
     
     func cancelEditing() {
         
-        delegate?.dismiss()
+        delegate?.dismiss(saveSettings: false)
     }
 }

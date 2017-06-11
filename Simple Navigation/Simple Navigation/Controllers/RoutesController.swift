@@ -14,8 +14,6 @@ class RoutesController: NSObject {
     private weak var mapViewController: MapControllerDelegate!
     var routes = [MarkerRoute]()
     
-    var updateingRoute: MarkerRoute?
-    
     init(mapViewController: MapControllerDelegate) {
         
         super.init()
@@ -27,14 +25,20 @@ class RoutesController: NSObject {
         
         self.routes = routes
         
+        let mapRoutes = self.mapRoutes()
+        
+        // Draw routes on map
+        mapViewController.loadRoutes(mapRoutes)
+    }
+    
+    func mapRoutes() -> [MKRoute] {
+        
         var mapRoutes = [MKRoute]()
         
         for route in routes {
             mapRoutes.append(route.route)
         }
-        
-        // Draw routes on map
-        mapViewController.loadRoutes(mapRoutes)
+        return mapRoutes
     }
     
     func currentProcessRoute() -> MarkerRoute? {
@@ -53,18 +57,18 @@ class RoutesController: NSObject {
                 routes.removeFirst()
             }
         }
+        
+        self.processNewRoutes(self.routes)
     }
     
     func updateRoute(_ route: MarkerRoute) {
         
-        if let validUpdatingRoute = self.updateingRoute, let neededUpdateRoute = routes.first {
-            if validUpdatingRoute === neededUpdateRoute {
-                self.routes.removeFirst()
-                self.routes.insert(route, at: 0)
+        if let currentProcessingRoute = self.currentProcessRoute() {
+            if route === currentProcessingRoute {
+                processNewRoutes(self.routes)
             }
             
-            processNewRoutes(self.routes)
+            
         }
-        
     }
 }
